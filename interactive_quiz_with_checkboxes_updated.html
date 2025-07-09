@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Whose Fact Is That? Quiz</title>
+<style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+select:disabled { opacity: 0.8; }
+        .checkbox { display: none; }
+    </style>
+</head>
+<body>
+<h2>Whose Fact Is That? Quiz</h2>
+<p>Match each fact to a participant. Each name can only be used once. Click "Submit" to lock in your answers and enable checkboxes.</p>
+<form id="quizForm">
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Fact</th>
+<th>Your Guess</th>
+<th>✔</th>
+</tr>
+</thead>
+<tbody id="quizBody">
+</tbody>
+</table>
+<br/>
+<button onclick="submitQuiz()" type="button">Submit</button>
+</form>
+<script>
+        const facts = [
+            "I am aiming to visit 50 countries by the age of 50 and have currently visited 25.",
+            "I have over 35 cousins.",
+            "When I was a kid I could fit a KitKat in my mouth sideways.",
+            "I once camped out overnight for a One Direction concert.",
+            "I once set out to drive along a beach which was 90 miles long, but before making it that far I got my car stuck in the car park and had to be towed out by some passers-by.",
+            "I have been, in person, to two Eurovision Song Contests.",
+            "I used the same hairdresser as Boris Johnson, and one time we were there together he asked me what I thought of his ‘new do’.",
+            "I was born 2 years before my biological twin.",
+            "I have over 300k followers on my social media tech channel that I do in my spare time.",
+            "I was once in the audience for a TV food/cooking show called Market Kitchen and shared a cigarette break with Heston Blumenthal, Matthew Fort, and Tom Parker-Bowles (yes, the Queen's son!!)"
+        ];
+
+        const participants = [
+            "Clare Cantle-Jones",
+            "Louise Butcher",
+            "Grace Carthy",
+            "Gary Taylor",
+            "Steph Markham",
+            "James Crawford",
+            "Claire Whittaker",
+            "Jaynesh Patel",
+            "Emily Kirk",
+            "Jonathan Sreeves",
+            "Greg Collingridge"
+        ];
+
+        const usedNames = new Set();
+
+        function populateQuiz() {
+            const tbody = document.getElementById("quizBody");
+            facts.forEach((fact, index) => {
+                const row = document.createElement("tr");
+
+                const numCell = document.createElement("td");
+                numCell.textContent = index + 1;
+
+                const factCell = document.createElement("td");
+                factCell.textContent = fact;
+
+                const selectCell = document.createElement("td");
+                const select = document.createElement("select");
+                select.name = "guess" + index;
+                select.dataset.index = index;
+                select.onchange = handleSelection;
+                const defaultOption = document.createElement("option");
+                defaultOption.value = "";
+                defaultOption.textContent = "-- Select --";
+                select.appendChild(defaultOption);
+                participants.forEach(name => {
+                    const option = document.createElement("option");
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+                selectCell.appendChild(select);
+
+                const checkboxCell = document.createElement("td");
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "checkbox";
+                checkbox.disabled = true;
+                checkboxCell.appendChild(checkbox);
+
+                row.appendChild(numCell);
+                row.appendChild(factCell);
+                row.appendChild(selectCell);
+                row.appendChild(checkboxCell);
+                tbody.appendChild(row);
+            });
+        }
+
+        function handleSelection(event) {
+            const selects = document.querySelectorAll("select");
+            const selectedValues = Array.from(selects).map(s => s.value).filter(v => v);
+            selects.forEach(select => {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value === "" || option.value === currentValue) {
+                        option.disabled = false;
+                    } else {
+                        option.disabled = selectedValues.includes(option.value);
+                    }
+                });
+            });
+        }
+
+        function submitQuiz() {
+            const selects = document.querySelectorAll("select");
+            selects.forEach(select => select.disabled = true);
+            const checkboxes = document.querySelectorAll(".checkbox");
+            checkboxes.forEach(cb => {
+                cb.style.display = "inline-block";
+                cb.disabled = false;
+            });
+            document.querySelector("button").disabled = true;
+        }
+
+        populateQuiz();
+    </script>
+</body>
+</html>
